@@ -40,9 +40,11 @@ static const int resizehints = 0;    /* 1 means respect size hints in tiled resi
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
+	{ "🔳",      centeredmaster },
 	{ "🪟",      tile },    /* first entry is default */
 	{ "🖱",      NULL },    /* no layout function means floating behavior */
 	{ "◻",      monocle },
+	{ "◾",      centeredfloatingmaster },
 };
 
 /* key definitions */
@@ -58,8 +60,15 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = {"rofi", "-show", "run", NULL};
+static const char *dmenucmd[] = {"rofi", "-modi", "drun", "-show-icons",  "-icon-theme",  "Papirus", "-show", "drun", NULL};
 static const char *termcmd[]  = { "st", NULL };
+static const char *topcmd[] = {"st", "ytop", NULL};
+static const char *filecmd[] = {"st", "lf", NULL};
+static const char *chatcmd[] = {"st", "weechat", NULL};
+static const char *emojicmd[] = {"rofimoji" , NULL};
+static const char *calccmd[] = {"rofi", "-modi", "calc", "-show", "calc" , NULL};
+static const char *browsercmd[] = {"qutebrowser", NULL};
+
 #include "selfrestart.c"
 
 static Key keys[] = {
@@ -75,10 +84,18 @@ static Key keys[] = {
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
 	{ MODKEY,                       XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
+    {MODKEY,                        XK_c,      spawn,           {.v = calccmd}},
+    {MODKEY|ShiftMask,                        XK_f,      spawn,           {.v = filecmd}},
+    {MODKEY,                        XK_y,      spawn,           {.v = topcmd}},
+    {MODKEY,                        XK_x,      spawn,           {.v = chatcmd}},
+    {MODKEY,                        XK_e,      spawn,          {.v = emojicmd}},
+    {MODKEY,                        XK_w,      spawn,           {.v = browsercmd}},
 	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
+	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[1]} },
+	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[2]} },
+	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[4]} },
+	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[0]} },
+	{ MODKEY,                       XK_o,      setlayout,      {.v = &layouts[5]} },
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
@@ -116,4 +133,3 @@ static Button buttons[] = {
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 };
-
