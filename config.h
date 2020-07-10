@@ -3,17 +3,12 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const unsigned int borderpx  = 15;        /* border pixel of windows */
-static const unsigned int snap      = 32;       /* snap pixel */
+static const unsigned int borderpx  = 3;        /* border pixel of windows */
+static const unsigned int snap      = 10;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const char *fonts[]          = { "IBM Plex Mono:size=22", "JoyPixels:pixelsize=22:antialias=true:autohint=true" };
 static const char dmenufont[]       = "IBM Plex Mono:size=22";
-static const char col_gray1[]       = "#222222";
-static const char col_gray2[]       = "#444444";
-static const char col_gray3[]       = "#bbbbbb";
-static const char col_gray4[]       = "#eeeeee";
-static const char col_cyan[]        = "#005577";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { light1, dark0, dark1 },
@@ -29,8 +24,7 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
-	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
-	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
+	{ NULL,     NULL,       NULL,       0,           False,           -1 },
 };
 
 /* layout(s) */
@@ -38,8 +32,11 @@ static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] 
 static const int nmaster     = 1;    /* number of clients in master area */
 static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
 
-static const Layout layouts[] = {
-	/* symbol     arrange function */
+static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
+static const unsigned int systrayspacing = 2;   /* systray spacing */
+static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
+static const int showsystray        = 1;     /* 0 means no systray */
+static const Layout layouts[] = {	/* symbol     arrange function */
 	{ "🔳",      centeredmaster },
 	{ "🪟",      tile },    /* first entry is default */
 	{ "🖱",      NULL },    /* no layout function means floating behavior */
@@ -49,6 +46,7 @@ static const Layout layouts[] = {
 
 /* key definitions */
 #define MODKEY Mod4Mask
+#define AltMask Mod1Mask
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
@@ -64,17 +62,20 @@ static const char *dmenucmd[] = {"rofi", "-modi", "drun", "-show-icons",  "-icon
 static const char *termcmd[]  = { "st", NULL };
 static const char *topcmd[] = {"st", "ytop", NULL};
 static const char *filecmd[] = {"st", "lf", NULL};
-static const char *chatcmd[] = {"st", "weechat", NULL};
+static const char *chatcmd[] = {"st", "weechat", "-r", "/mouse", "enable", NULL};
 static const char *emojicmd[] = {"rofimoji" , NULL};
 static const char *calccmd[] = {"rofi", "-modi", "calc", "-show", "calc" , NULL};
+static const char *muttcmd[] = {"st", "neomutt", NULL};
 static const char *browsercmd[] = {"qutebrowser", NULL};
+static const char *passcmd[] = {"passmenu", "--type", NULL};
+static const char *feedcmd[] = {"st", "newsboat", NULL};
 
 #include "selfrestart.c"
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
-	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
+	{ MODKEY|ShiftMask,                       XK_p,      spawn,          {.v = passcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
@@ -82,7 +83,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
-	{ MODKEY,                       XK_Return, zoom,           {0} },
+	{ MODKEY,                       XK_Return, spawn,           {.v = termcmd} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
     {MODKEY,                        XK_c,      spawn,           {.v = calccmd}},
     {MODKEY|ShiftMask,                        XK_f,      spawn,           {.v = filecmd}},
@@ -90,13 +91,15 @@ static Key keys[] = {
     {MODKEY,                        XK_x,      spawn,           {.v = chatcmd}},
     {MODKEY,                        XK_e,      spawn,          {.v = emojicmd}},
     {MODKEY,                        XK_w,      spawn,           {.v = browsercmd}},
+    {MODKEY|ShiftMask,              XK_m,      spawn,           {.v = muttcmd}},
+    {MODKEY,              XK_n,      spawn,           {.v = feedcmd}},
 	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[4]} },
+	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[3]} },
 	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_o,      setlayout,      {.v = &layouts[5]} },
-	{ MODKEY,                       XK_space,  setlayout,      {0} },
+	{ MODKEY,                       XK_o,      setlayout,      {.v = &layouts[4]} },
+	{ MODKEY,                       XK_space,  zoom,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
