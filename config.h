@@ -1,20 +1,22 @@
 # include "colors.h"
 
+
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const unsigned int borderpx  = 3;        /* border pixel of windows */
-static const unsigned int snap      = 10;       /* snap pixel */
+static const unsigned int borderpx  = 0;        /* border pixel of windows */
+static const unsigned int gappx = 32;
+static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const char *fonts[]          = { "IBM Plex Mono:size=22", "JoyPixels:pixelsize=22:antialias=true:autohint=true" };
 static const char dmenufont[]       = "IBM Plex Mono:size=22";
 static const char *colors[][3]      = {
-	/*               fg         bg         border   */
-	[SchemeNorm] = { light1, dark0, dark1 },
+	/*               fg         bg         border   */ [SchemeNorm] = { light1, dark0, dark1 },
 	[SchemeSel]  = { dark0, light1 , bright_orange  },
 };
 
+static const int CORNER_RADIUS = 30;
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
