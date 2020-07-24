@@ -1,11 +1,15 @@
 # include "colors.h"
 
-
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
 static const unsigned int borderpx  = 0;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
+static const unsigned int gappih = 30;
+static const unsigned int gappiv = 30;
+static const unsigned int gappoh = 30;
+static const unsigned int gappov = 30;
+static const int smartgaps          = 0;        /* 1 means no outer gap when there is only one window */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const char *fonts[]          = { "IBM Plex Mono:size=22", "JoyPixels:pixelsize=22:antialias=true:autohint=true" };
@@ -16,7 +20,7 @@ static const char *colors[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+static const char *tags[] = { "💬","🎹", "💻", "🎓", "🌐", "➕"};
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -26,6 +30,9 @@ static const Rule rules[] = {
 	/* class      instance    title       tags mask     isfloating   monitor */
 	{ NULL,     NULL,       NULL,       0,           False,           -1 },
 };
+
+#define FORCE_VSPLIT 1
+# include "vanitygaps.c"
 
 /* layout(s) */
 static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
@@ -37,10 +44,10 @@ static const unsigned int systrayspacing = 2;   /* systray spacing */
 static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
 static const int showsystray        = 1;     /* 0 means no systray */
 static const Layout layouts[] = {	/* symbol     arrange function */
-	{ "🔳",      centeredmaster },
-	{ "🪟",      tile },    /* first entry is default */
-	{ "🖱",      NULL },    /* no layout function means floating behavior */
 	{ "◻",      monocle },
+	{ "🪟",      tile },    /* first entry is default */
+	{ "🔳",      centeredmaster },
+	{ "🖱",      NULL },    /* no layout function means floating behavior */
 	{ "◾",      centeredfloatingmaster },
 };
 
@@ -101,9 +108,9 @@ static Key keys[] = {
     {MODKEY,              XK_s,      spawn,           {.v = lockcmd}},
 	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[3]} },
-	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[0]} },
+	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[3]} },
+	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[0]} },
+	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[2]} },
 	{ MODKEY,                       XK_o,      setlayout,      {.v = &layouts[4]} },
 	{ MODKEY,                       XK_space,  zoom,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
