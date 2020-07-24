@@ -15,7 +15,6 @@ static const char *colors[][3]      = {
 	[SchemeSel]  = { dark0, light1 , bright_orange  },
 };
 
-static const int CORNER_RADIUS = 30;
 /* tagging */
 static const char *tags[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
