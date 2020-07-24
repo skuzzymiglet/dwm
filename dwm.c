@@ -2455,6 +2455,7 @@ zoom(const Arg *arg)
 	if (c == nexttiled(selmon->clients))
 		if (!c || !(c = nexttiled(c->next)))
 			return;
+    pop(c);
 }
 
 int
