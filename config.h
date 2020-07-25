@@ -12,8 +12,8 @@ static const unsigned int gappov = 30;
 static const int smartgaps          = 0;        /* 1 means no outer gap when there is only one window */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "IBM Plex Mono:size=22", "JoyPixels:pixelsize=22:antialias=true:autohint=true" };
-static const char dmenufont[]       = "IBM Plex Mono:size=22";
+static const char *fonts[]          = { "IBM Plex Mono:size=18", "JoyPixels:pixelsize=17:antialias=true:autohint=true" };
+static const char dmenufont[]       = "IBM Plex Mono:size=18";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */ [SchemeNorm] = { light1, dark0, dark1 },
 	[SchemeSel]  = { dark0, light1 , bright_orange  },
@@ -44,9 +44,9 @@ static const unsigned int systrayspacing = 2;   /* systray spacing */
 static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
 static const int showsystray        = 1;     /* 0 means no systray */
 static const Layout layouts[] = {	/* symbol     arrange function */
+	{ "🔳",      centeredmaster },
 	{ "◻",      monocle },
 	{ "🪟",      tile },    /* first entry is default */
-	{ "🔳",      centeredmaster },
 	{ "🖱",      NULL },    /* no layout function means floating behavior */
 	{ "◾",      centeredfloatingmaster },
 };
@@ -69,7 +69,7 @@ static const char *dmenucmd[] = {"rofi", "-modi", "drun", "-show-icons",  "-icon
 static const char *termcmd[]  = { "st", NULL };
 static const char *topcmd[] = {"st", "ytop", NULL};
 static const char *filecmd[] = {"st", "lf", NULL};
-static const char *chatcmd[] = {"st", "weechat", "-r", "/mouse", "enable", NULL};
+static const char *chatcmd[] = {"st", "abduco", "-A", "weechat", "weechat", "-r", "/mouse", "enable", NULL};
 static const char *emojicmd[] = {"rofimoji" , NULL};
 static const char *calccmd[] = {"rofi", "-modi", "calc", "-show", "calc" , NULL};
 static const char *muttcmd[] = {"st", "neomutt", NULL};
@@ -79,8 +79,10 @@ static const char *feedcmd[] = {"st", "newsboat", NULL};
 static const char *mixercmd[] = {"st", "pulsemixer", NULL};
 static const char *lockcmd[] = {"slock", NULL};
 static const char *openselcmd[] = {"~/bin/open", NULL};
+static const char *musiccmd[] = {"st",  "abduco", "-A", "music", "cmus", NULL};
 
 #include "selfrestart.c"
+#include <X11/XF86keysym.h>
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -95,8 +97,9 @@ static Key keys[] = {
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
 	{ MODKEY,                       XK_Return, spawn,           {.v = termcmd} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
+    {MODKEY|ShiftMask,              XK_l,       spawn,            {.v = musiccmd} },
     {MODKEY,                        XK_c,      spawn,           {.v = calccmd}},
-    {MODKEY|ShiftMask,                        XK_f,      spawn,           {.v = filecmd}},
+    {MODKEY,                        XK_f,      spawn,           {.v = filecmd}},
     {MODKEY,                        XK_y,      spawn,           {.v = topcmd}},
     {MODKEY,                        XK_x,      spawn,           {.v = chatcmd}},
     {MODKEY,                        XK_e,      spawn,          {.v = emojicmd}},
@@ -107,10 +110,10 @@ static Key keys[] = {
     {MODKEY,              XK_n,      spawn,           {.v = feedcmd}},
     {MODKEY,              XK_s,      spawn,           {.v = lockcmd}},
 	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[3]} },
-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[2]} },
+	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[2]} },
+	{ MODKEY|ShiftMask,                       XK_f,      setlayout,      {.v = &layouts[3]} },
+	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[1]} },
+	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[0]} },
 	{ MODKEY,                       XK_o,      setlayout,      {.v = &layouts[4]} },
 	{ MODKEY,                       XK_space,  zoom,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
@@ -120,6 +123,16 @@ static Key keys[] = {
 	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+    {0,                             XF86XK_MonBrightnessUp, spawn, SHCMD("xbacklight -inc 10")},
+    {0,                             XF86XK_MonBrightnessDown, spawn, SHCMD("xbacklight -dec 10")},
+    {0,                             XF86XK_AudioRaiseVolume, spawn, SHCMD("pamixer -i 10")},
+    {0,                             XF86XK_AudioLowerVolume, spawn, SHCMD("pamixer -d 10")},
+    {0,                             XF86XK_AudioMute, spawn, SHCMD("pamixer -t")},
+    {0,                             XF86XK_AudioRewind, spawn, SHCMD("cmus-remote -C \"seek -5\"")},
+    {0,                             XF86XK_AudioForward, spawn, SHCMD("cmus-remote -C \"seek +5\"")},
+    {0,                             XF86XK_AudioPrev, spawn, SHCMD("cmus-remote -C \"player-prev\"")},
+    {0,                             XF86XK_AudioNext, spawn, SHCMD("cmus-remote -C \"player-next\"")},
+    {0,                             XF86XK_AudioPlay, spawn, SHCMD("cmus-remote -C \"player-pause\"")},
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
